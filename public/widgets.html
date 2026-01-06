@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Widget - Joanna's Website</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Navigation Header -->
+    <header class="site-header">
+        <nav class="main-nav">
+            <a href="index.html" class="nav-button">Home</a>
+            <a href="about.html" class="nav-button">About</a>
+            <a href="projects.html" class="nav-button">Projects</a>
+            <a href="widgets.html" class="nav-button active">Widget</a>
+            <a href="contact.html" class="nav-button">Contact</a>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Sorting Visualizer Widget -->
+        <section class="page-section" id="sorting-visualizer">
+            <h2 class="section-heading">Sorting Algorithm Visualizer</h2>
+            <p>Watch how different sorting algorithms work by visualizing the sorting process step by step.</p>
+            
+            <div class="visualizer-controls">
+                <div class="controls-row">
+                    <div class="control-group">
+                        <label for="algorithm-select">Sorting Algorithm:</label>
+                        <select id="algorithm-select" class="algorithm-select">
+                            <option value="bubble">Bubble Sort</option>
+                            <option value="selection">Selection Sort</option>
+                            <option value="insertion">Insertion Sort</option>
+                            <option value="merge">Merge Sort</option>
+                            <option value="quick">Quick Sort</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="speed-slider">Speed:</label>
+                        <input type="range" id="speed-slider" class="speed-slider" min="50" max="300" value="50">
+                        <span class="speed-value">50ms</span>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="size-slider">Bars:</label>
+                        <input type="range" id="size-slider" class="size-slider" min="10" max="45" value="20">
+                        <span class="size-value">20</span>
+                    </div>
+                </div>
+                
+                <div class="controls-row">
+                    <button class="shuffle-btn">Shuffle</button>
+                    <button class="start-btn">Start Sorting</button>
+                    <button class="pause-btn" disabled>Pause</button>
+                    <button class="sort-order-btn">Sort: Ascending</button>
+                </div>
+            </div>
+            
+            <div class="bars-container"></div>
+            
+            <div class="visualizer-info">
+                <p><strong>How it works:</strong> Each vertical bar represents a number. Watch as the algorithm compares and swaps bars to sort them.</p>
+                <p><strong>Legend:</strong> <span class="legend-item comparing">Blue</span> = Comparing | <span class="legend-item swapping">Red</span> = Swapping | <span class="legend-item sorted">Green</span> = Sorted</p>
+            </div>
+        </section>
+    </main>
+    
+    <script src="scripts/sorting-visualizer.js"></script>
+</body>
+</html>
