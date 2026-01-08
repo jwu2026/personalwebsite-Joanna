@@ -5,16 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ski Cards - Joanna's Website</title>
     <link rel="stylesheet" href="style.css">
+    <script defer src="scripts/dark-mode.js"></script>
     <style>
+        /* Override main-content max-width for cards page */
+        .main-content {
+            max-width: 1600px;
+        }
+
         .cards-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 1.5rem;
             margin: 2rem 0;
         }
 
+        /* Responsive: 2 cards on small screens, 1 on mobile */
+        @media (max-width: 1000px) {
+            .cards-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .cards-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
         .card-item {
-            background-color: white;
+            background-color: #c5ddf5;
             padding: 1.5rem;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 0 20px rgba(135, 206, 250, 0.8);
@@ -41,12 +60,24 @@
             color: #1e3a5f;
         }
 
+        .card-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: center;
+            color: #2c5f8d;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #87ceeb;
+        }
+
         .add-card-form {
-            background-color: white;
+            background-color: #e6f2ff;
             padding: 2rem;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            margin: 2rem 0;
+            margin: 2rem auto;
+            max-width: 400px;
+            width: 100%;
         }
 
         .form-group {
@@ -130,12 +161,11 @@
 <body>
     <!-- Navigation Header -->
     <header class="site-header">
+        <button id="dark-mode-toggle" aria-label="Switch to dark mode">🌙</button>
         <nav class="main-nav">
             <a href="index.html" class="nav-button">Home</a>
             <a href="about.html" class="nav-button">About</a>
             <a href="projects.html" class="nav-button">Projects</a>
-            <a href="widgets.html" class="nav-button">Widget</a>
-            <a href="cards.html" class="nav-button active">Ski Database</a>
             <a href="contact.html" class="nav-button">Contact</a>
         </nav>
     </header>
@@ -208,10 +238,7 @@
             cardElement.className = 'card-item';
             cardElement.setAttribute('data-doc-id', docId);
             cardElement.innerHTML = `
-                <div class="card-field">
-                    <span class="card-field-label">Name:</span>
-                    <span class="card-field-value">${escapeHtml(data.Name || 'N/A')}</span>
-                </div>
+                <div class="card-name">${escapeHtml(data.Name || 'N/A')}</div>
                 <div class="card-field">
                     <span class="card-field-label">Location:</span>
                     <span class="card-field-value">${escapeHtml(data.Location || 'N/A')}</span>

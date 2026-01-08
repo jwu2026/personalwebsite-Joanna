@@ -5,16 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact - Joanna's Website</title>
     <link rel="stylesheet" href="style.css">
+    <script defer src="scripts/dark-mode.js"></script>
 </head>
 <body>
     <!-- Navigation Header -->
     <header class="site-header">
+        <button id="dark-mode-toggle" aria-label="Switch to dark mode">🌙</button>
         <nav class="main-nav">
             <a href="index.html" class="nav-button">Home</a>
             <a href="about.html" class="nav-button">About</a>
             <a href="projects.html" class="nav-button">Projects</a>
-            <a href="widgets.html" class="nav-button">Widget</a>
-            <a href="cards.html" class="nav-button">Ski Database</a>
             <a href="contact.html" class="nav-button active">Contact</a>
         </nav>
     </header>
@@ -23,7 +23,9 @@
     <main class="main-content">
         <section class="page-section">
             <h1 class="section-heading">Contact</h1>            
-            <p>Email: <a href="mailto:jwu2@hwemail.com">jwu2@hwemail.com</a></p>
+            <div class="email-container">
+                <p>Email: <a href="mailto:jwu2@hwemail.com">jwu2@hwemail.com</a></p>
+            </div>
         </section>
     </main>
 </body>

@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2048 Game - Joanna's Website</title>
+    <link rel="stylesheet" href="style.css">
+    <script defer src="scripts/cookies.js"></script>
+    <script defer src="scripts/dark-mode.js"></script>
+    <style>
+        .main-content {
+            max-width: 1200px;
+        }
+
+        .username-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .username-modal.active {
+            display: flex;
+        }
+
+        .username-form {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .username-form h2 {
+            color: #2c5f8d;
+            margin-bottom: 1rem;
+        }
+
+        .username-form input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #87ceeb;
+            border-radius: 5px;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            box-sizing: border-box;
+        }
+
+        .username-form button {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: #5ba3d0;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .username-form button:hover {
+            background-color: #4a8bb8;
+        }
+
+        .game-container {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 900px) {
+            .game-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .game-board-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 1rem;
+        }
+
+        .score-display {
+            background-color: #2c5f8d;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .score-display h3 {
+            margin: 0 0 0.5rem 0;
+            font-size: 0.9rem;
+        }
+
+        .score-display .score-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            background-color: #bbada0;
+            padding: 10px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 500px;
+            aspect-ratio: 1;
+        }
+
+        .game-cell {
+            background-color: #cdc1b4;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #776e65;
+            aspect-ratio: 1;
+        }
+
+        .game-cell.tile-2 {
+            background-color: #eee4da;
+        }
+
+        .game-cell.tile-4 {
+            background-color: #ede0c8;
+        }
+
+        .game-cell.tile-8 {
+            background-color: #f2b179;
+            color: white;
+        }
+
+        .game-cell.tile-16 {
+            background-color: #f59563;
+            color: white;
+        }
+
+        .game-cell.tile-32 {
+            background-color: #f67c5f;
+            color: white;
+        }
+
+        .game-cell.tile-64 {
+            background-color: #f65e3b;
+            color: white;
+        }
+
+        .game-cell.tile-128 {
+            background-color: #edcf72;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .game-cell.tile-256 {
+            background-color: #edcc61;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .game-cell.tile-512 {
+            background-color: #edc850;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .game-cell.tile-1024 {
+            background-color: #edc53f;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .game-cell.tile-2048 {
+            background-color: #edc22e;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .game-controls {
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .new-game-btn {
+            padding: 0.75rem 2rem;
+            background-color: #5ba3d0;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        .new-game-btn:hover {
+            background-color: #4a8bb8;
+        }
+
+        .end-game-btn {
+            padding: 0.75rem 2rem;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .end-game-btn:hover {
+            background-color: #c82333;
+        }
+
+        .end-game-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .game-instructions {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #e6f2ff;
+            border-radius: 8px;
+            color: #2c5f8d;
+        }
+
+        .leaderboard-container {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .leaderboard-container h2 {
+            color: #2c5f8d;
+            margin-top: 0;
+            text-align: center;
+        }
+
+        .leaderboard-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #5ba3d0;
+        }
+
+        .leaderboard-item.rank-1 {
+            border-left-color: #ffd700;
+            background-color: #fff9e6;
+        }
+
+        .leaderboard-item.rank-2 {
+            border-left-color: #c0c0c0;
+            background-color: #f5f5f5;
+        }
+
+        .leaderboard-item.rank-3 {
+            border-left-color: #cd7f32;
+            background-color: #faf5f0;
+        }
+
+        .leaderboard-rank {
+            font-weight: bold;
+            color: #2c5f8d;
+            min-width: 30px;
+        }
+
+        .leaderboard-username {
+            flex: 1;
+            margin: 0 1rem;
+            font-weight: bold;
+            color: #1e3a5f;
+        }
+
+        .leaderboard-score {
+            font-weight: bold;
+            color: #5ba3d0;
+            font-size: 1.1rem;
+        }
+
+        .game-over-message {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            z-index: 999;
+            text-align: center;
+        }
+
+        .game-over-message.active {
+            display: block;
+        }
+
+        .game-over-message h2 {
+            color: #2c5f8d;
+            margin-bottom: 1rem;
+        }
+
+        .game-over-message button {
+            padding: 0.75rem 2rem;
+            background-color: #5ba3d0;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 1rem;
+        }
+
+        .game-over-message button:hover {
+            background-color: #4a8bb8;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <header class="site-header">
+        <button id="dark-mode-toggle" aria-label="Switch to dark mode">🌙</button>
+        <nav class="main-nav">
+            <a href="index.html" class="nav-button">Home</a>
+            <a href="about.html" class="nav-button">About</a>
+            <a href="projects.html" class="nav-button">Projects</a>
+            <a href="contact.html" class="nav-button">Contact</a>
+        </nav>
+    </header>
+
+    <!-- Username Modal -->
+    <div id="usernameModal" class="username-modal active">
+        <div class="username-form">
+            <h2>Enter Your Username</h2>
+            <input type="text" id="usernameInput" placeholder="Your username" maxlength="20" autofocus>
+            <button id="usernameSubmit">Start Playing</button>
+        </div>
+    </div>
+
+    <!-- Game Over Message -->
+    <div id="gameOverMessage" class="game-over-message">
+        <h2>Game Over!</h2>
+        <p id="finalScoreText">Your Score: 0</p>
+        <button id="playAgainBtn">Play Again</button>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <section class="page-section">
+            <h1 class="section-heading">🎮 2048 Game</h1>
+            
+            <div class="game-container">
+                <!-- Game Board -->
+                <div class="game-board-container">
+                    <div class="game-header">
+                        <div class="score-display">
+                            <h3>Score</h3>
+                            <div class="score-value" id="scoreDisplay">0</div>
+                        </div>
+                        <div class="score-display">
+                            <h3>Best</h3>
+                            <div class="score-value" id="bestScoreDisplay">0</div>
+                        </div>
+                    </div>
+                    
+                    <div class="game-board" id="gameBoard"></div>
+                    
+                    <div class="game-controls">
+                        <button class="new-game-btn" id="newGameBtn">New Game</button>
+                        <button class="end-game-btn" id="endGameBtn">End Game</button>
+                    </div>
+                    
+                    <div class="game-instructions">
+                        <p><strong>How to play:</strong> Use arrow keys <span style="font-size: 1.2em;">↑ ↓ → ←</span> to move tiles. When two tiles with the same number touch, they merge into one!</p>
+                    </div>
+                </div>
+
+                <!-- Leaderboard -->
+                <div class="leaderboard-container">
+                    <h2>🏆 Leaderboard</h2>
+                    <ul class="leaderboard-list" id="leaderboardList">
+                        <li class="leaderboard-item">
+                            <span class="leaderboard-rank">-</span>
+                            <span class="leaderboard-username">Loading...</span>
+                            <span class="leaderboard-score">-</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getFirestore, collection, addDoc, query, orderBy, limit, onSnapshot, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDWZas6-oL7nhOgay_nrEEoIhD_bm4j9ik",
+            authDomain: "personalwebsite-joanna.firebaseapp.com",
+            projectId: "personalwebsite-joanna",
+            storageBucket: "personalwebsite-joanna.firebasestorage.app",
+            messagingSenderId: "966712892970",
+            appId: "1:966712892970:web:6b8248cac5c1bf9787ed53",
+            measurementId: "G-0RYQYGGXMX"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Game state
+        let board = [];
+        let score = 0;
+        let bestScore = 0;
+        let username = '';
+        let gameOver = false;
+
+        // DOM elements
+        const usernameModal = document.getElementById('usernameModal');
+        const usernameInput = document.getElementById('usernameInput');
+        const usernameSubmit = document.getElementById('usernameSubmit');
+        const gameBoard = document.getElementById('gameBoard');
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const bestScoreDisplay = document.getElementById('bestScoreDisplay');
+        const newGameBtn = document.getElementById('newGameBtn');
+        const endGameBtn = document.getElementById('endGameBtn');
+        const gameOverMessage = document.getElementById('gameOverMessage');
+        const finalScoreText = document.getElementById('finalScoreText');
+        const playAgainBtn = document.getElementById('playAgainBtn');
+        const leaderboardList = document.getElementById('leaderboardList');
+
+        // Initialize board
+        function initBoard() {
+            board = Array(4).fill(null).map(() => Array(4).fill(0));
+            score = 0;
+            gameOver = false;
+            endGameBtn.disabled = false;
+            updateScore();
+            addRandomTile();
+            addRandomTile();
+            renderBoard();
+        }
+
+        // Add random tile (2 or 4)
+        function addRandomTile() {
+            const emptyCells = [];
+            for (let i = 0; i < 4; i++) {
+                for (let j = 0; j < 4; j++) {
+                    if (board[i][j] === 0) {
+                        emptyCells.push({ row: i, col: j });
+                    }
+                }
+            }
+            if (emptyCells.length > 0) {
+                const randomCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+                board[randomCell.row][randomCell.col] = Math.random() < 0.9 ? 2 : 4;
+            }
+        }
+
+        // Render board
+        function renderBoard() {
+            gameBoard.innerHTML = '';
+            for (let i = 0; i < 4; i++) {
+                for (let j = 0; j < 4; j++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'game-cell';
+                    if (board[i][j] !== 0) {
+                        cell.textContent = board[i][j];
+                        cell.classList.add(`tile-${board[i][j]}`);
+                    }
+                    gameBoard.appendChild(cell);
+                }
+            }
+        }
+
+        // Move tiles left
+        function moveLeft() {
+            let moved = false;
+            for (let i = 0; i < 4; i++) {
+                const row = board[i].filter(val => val !== 0);
+                const newRow = [];
+                for (let j = 0; j < row.length; j++) {
+                    if (j < row.length - 1 && row[j] === row[j + 1]) {
+                        newRow.push(row[j] * 2);
+                        score += row[j] * 2;
+                        j++;
+                        moved = true;
+                    } else {
+                        newRow.push(row[j]);
+                    }
+                }
+                while (newRow.length < 4) {
+                    newRow.push(0);
+                }
+                if (JSON.stringify(board[i]) !== JSON.stringify(newRow)) {
+                    moved = true;
+                }
+                board[i] = newRow;
+            }
+            return moved;
+        }
+
+        // Rotate board 90 degrees clockwise
+        function rotateBoard() {
+            const newBoard = Array(4).fill(null).map(() => Array(4).fill(0));
+            for (let i = 0; i < 4; i++) {
+                for (let j = 0; j < 4; j++) {
+                    newBoard[j][3 - i] = board[i][j];
+                }
+            }
+            board = newBoard;
+        }
+
+        // Move in different directions
+        function move(direction) {
+            if (gameOver) return false;
+            
+            let moved = false;
+            switch(direction) {
+                case 'left':
+                    moved = moveLeft();
+                    break;
+                case 'right':
+                    rotateBoard();
+                    rotateBoard();
+                    moved = moveLeft();
+                    rotateBoard();
+                    rotateBoard();
+                    break;
+                case 'up':
+                    rotateBoard();
+                    rotateBoard();
+                    rotateBoard();
+                    moved = moveLeft();
+                    rotateBoard();
+                    break;
+                case 'down':
+                    rotateBoard();
+                    moved = moveLeft();
+                    rotateBoard();
+                    rotateBoard();
+                    rotateBoard();
+                    break;
+            }
+            
+            if (moved) {
+                addRandomTile();
+                updateScore();
+                renderBoard();
+                checkGameOver();
+            }
+            return moved;
+        }
+
+        // Check if game is over
+        function checkGameOver() {
+            // Check for empty cells
+            for (let i = 0; i < 4; i++) {
+                for (let j = 0; j < 4; j++) {
+                    if (board[i][j] === 0) {
+                        return;
+                    }
+                }
+            }
+            
+            // Check for possible merges
+            for (let i = 0; i < 4; i++) {
+                for (let j = 0; j < 4; j++) {
+                    const current = board[i][j];
+                    if ((i < 3 && board[i + 1][j] === current) ||
+                        (j < 3 && board[i][j + 1] === current)) {
+                        return;
+                    }
+                }
+            }
+            
+            gameOver = true;
+            endGameBtn.disabled = true;
+            finalScoreText.textContent = `Your Score: ${score}`;
+            gameOverMessage.classList.add('active');
+            
+            // Save score to leaderboard
+            saveScore();
+        }
+
+        // Update score display
+        function updateScore() {
+            scoreDisplay.textContent = score;
+            if (score > bestScore) {
+                bestScore = score;
+                bestScoreDisplay.textContent = bestScore;
+                setHighestScore(bestScore);
+            }
+        }
+
+        // End game manually
+        async function endGame() {
+            if (gameOver) return;
+            
+            gameOver = true;
+            endGameBtn.disabled = true;
+            
+            // Save score to leaderboard
+            await saveScore();
+            
+            // Show game over message
+            finalScoreText.textContent = `Your Score: ${score}`;
+            gameOverMessage.classList.add('active');
+        }
+
+        // Save score to Firestore
+        async function saveScore() {
+            if (score > 0 && username) {
+                try {
+                    await addDoc(collection(db, '2048_scores'), {
+                        username: username,
+                        score: score,
+                        timestamp: new Date()
+                    });
+                    // Leaderboard will update automatically via onSnapshot
+                } catch (error) {
+                    console.error('Error saving score:', error);
+                }
+            }
+        }
+
+        // Load leaderboard
+        function loadLeaderboard() {
+            const scoresRef = collection(db, '2048_scores');
+            const q = query(scoresRef, orderBy('score', 'desc'), limit(5));
+            
+            onSnapshot(q, (snapshot) => {
+                leaderboardList.innerHTML = '';
+                if (snapshot.empty) {
+                    leaderboardList.innerHTML = '<li class="leaderboard-item"><span class="leaderboard-username">No scores yet!</span></li>';
+                    return;
+                }
+                
+                snapshot.docs.forEach((doc, index) => {
+                    const data = doc.data();
+                    const item = document.createElement('li');
+                    item.className = `leaderboard-item rank-${index + 1}`;
+                    item.innerHTML = `
+                        <span class="leaderboard-rank">${index + 1}</span>
+                        <span class="leaderboard-username">${escapeHtml(data.username || 'Anonymous')}</span>
+                        <span class="leaderboard-score">${data.score}</span>
+                    `;
+                    leaderboardList.appendChild(item);
+                });
+            }, (error) => {
+                console.error('Error loading leaderboard:', error);
+                leaderboardList.innerHTML = '<li class="leaderboard-item"><span class="leaderboard-username">Error loading leaderboard</span></li>';
+            });
+        }
+
+        // Escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => {
+            if (gameOver) return;
+            
+            switch(e.key) {
+                case 'ArrowLeft':
+                    e.preventDefault();
+                    move('left');
+                    break;
+                case 'ArrowRight':
+                    e.preventDefault();
+                    move('right');
+                    break;
+                case 'ArrowUp':
+                    e.preventDefault();
+                    move('up');
+                    break;
+                case 'ArrowDown':
+                    e.preventDefault();
+                    move('down');
+                    break;
+            }
+        });
+
+        // Touch controls
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        gameBoard.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        });
+
+        gameBoard.addEventListener('touchend', (e) => {
+            if (!touchStartX || !touchStartY) return;
+            
+            const touchEndX = e.changedTouches[0].clientX;
+            const touchEndY = e.changedTouches[0].clientY;
+            
+            const diffX = touchStartX - touchEndX;
+            const diffY = touchStartY - touchEndY;
+            
+            if (Math.abs(diffX) > Math.abs(diffY)) {
+                if (diffX > 0) {
+                    move('left');
+                } else {
+                    move('right');
+                }
+            } else {
+                if (diffY > 0) {
+                    move('up');
+                } else {
+                    move('down');
+                }
+            }
+            
+            touchStartX = 0;
+            touchStartY = 0;
+        });
+
+        // Username submission
+        usernameSubmit.addEventListener('click', () => {
+            const inputUsername = usernameInput.value.trim();
+            if (inputUsername) {
+                username = inputUsername;
+                localStorage.setItem('2048_username', username);
+                usernameModal.classList.remove('active');
+                initBoard();
+            }
+        });
+
+        usernameInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                usernameSubmit.click();
+            }
+        });
+
+        // New game button
+        newGameBtn.addEventListener('click', () => {
+            gameOverMessage.classList.remove('active');
+            initBoard();
+        });
+
+        // End game button
+        endGameBtn.addEventListener('click', () => {
+            endGame();
+        });
+
+        playAgainBtn.addEventListener('click', () => {
+            gameOverMessage.classList.remove('active');
+            initBoard();
+        });
+
+        // Load saved username and best score
+        const savedUsername = localStorage.getItem('2048_username');
+        const savedBestScore = getHighestScore();
+        
+        if (savedUsername) {
+            username = savedUsername;
+            usernameInput.value = savedUsername;
+        }
+        
+        if (savedBestScore > 0) {
+            bestScore = savedBestScore;
+            bestScoreDisplay.textContent = bestScore;
+        }
+
+        // Load leaderboard
+        loadLeaderboard();
+
+        // If username exists, start game immediately
+        if (savedUsername) {
+            usernameModal.classList.remove('active');
+            initBoard();
+        }
+    </script>
+</body>
+</html>

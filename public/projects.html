@@ -5,16 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Projects - Joanna's Website</title>
     <link rel="stylesheet" href="style.css">
+    <script defer src="scripts/dark-mode.js"></script>
 </head>
 <body>
     <!-- Navigation Header -->
     <header class="site-header">
+        <button id="dark-mode-toggle" aria-label="Switch to dark mode">🌙</button>
         <nav class="main-nav">
             <a href="index.html" class="nav-button">Home</a>
             <a href="about.html" class="nav-button">About</a>
             <a href="projects.html" class="nav-button active">Projects</a>
-            <a href="widgets.html" class="nav-button">Widget</a>
-            <a href="cards.html" class="nav-button">Ski Database</a>
             <a href="contact.html" class="nav-button">Contact</a>
         </nav>
     </header>
@@ -23,7 +23,19 @@
     <main class="main-content">
         <section class="page-section">
             <h1 class="section-heading">Projects</h1>
-            <p>This is the projects page showcasing my work.</p>
+            
+            <!-- Project Buttons -->
+            <div class="module-grid" style="margin-top: 2rem;">
+                <a href="widgets.html" class="module-card">
+                    <h3>Learning Widget</h3>
+                </a>
+                <a href="cards.html" class="module-card">
+                    <h3>Ski Database</h3>
+                </a>
+                <a href="2048.html" class="module-card">
+                    <h3>2048 Game</h3>
+                </a>
+            </div>
         </section>
     </main>
 </body>
